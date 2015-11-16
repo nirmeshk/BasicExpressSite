@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/nirmeshk/BasicExpressSite.svg?branch=master)](https://travis-ci.org/nirmeshk/BasicExpressSite)
+
 Basic Express Site
 ==================
 
