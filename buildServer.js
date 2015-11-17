@@ -9,13 +9,13 @@ var app = express();
 
 config = ini.parse(fs.readFileSync('./config.ini', 'utf-8'))
 
-var redisClient = redis.createClient(6379, '107.170.29.129', config.auth.redis_pass);
+var redisPass = config.auth.redis_pass
+var redisClient = redis.createClient(6379, '107.170.29.129', {auth_pass: redisPass});
 
 var authToken = config.auth.travis_auth_token
 
 app.get('/build', function (req, res) {
   // verify the auth token
-  res.send('Hello World!');
   console.log(req.params.authToken);
   console.log(req.params.branch);
   console.log(req.params.commit);
