@@ -1,9 +1,11 @@
 FROM    ubuntu:14.04
 
 # Enable EPEL for Node.js
-RUN     rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-# Install Node.js and npm
-RUN     yum install -y npm
+RUN 	apt-get install -y curl
+RUN     curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+RUN     apt-get install -y nodejs
+
+RUN     apt-get install -y build-essential
 
 # Bundle app source
 COPY . /src
