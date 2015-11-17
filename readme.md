@@ -16,6 +16,17 @@ npm install
 
 All dependencies will be downloaded by `npm` to `node_modules` folder.
 
+Configuration files
+---------------------
+
+```
+scope = global
+[auth]
+travis_auth_token = "Your auth token for travi ci repo"
+```
+
+
+
 Run
 ---
 
