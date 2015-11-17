@@ -16,9 +16,9 @@ var authToken = config.auth.travis_auth_token
 
 app.get('/build', function (req, res) {
   // verify the auth token
-  console.log(req.params.authToken);
-  console.log(req.params.branch);
-  console.log(req.params.commit);
+  console.log(req.query.authToken);
+  console.log(req.query.branch);
+  console.log(req.query.commit);
   // Verify the branch to be deployed. We are assuming that only `master` branch is deployed
 });
 
