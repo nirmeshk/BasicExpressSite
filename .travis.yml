@@ -5,4 +5,4 @@ after_success:
     - echo $authToken
     - echo $TRAVIS_BRANCH
     - echo $TRAVIS_COMMIT
-    - curl -X GET http://45.55.6.77:8080/build?authToken=$authToken&branch=$TRAVIS_BRANCH&commit=$TRAVIS_COMMIT
+    - curl -X GET http://45.55.6.77:8080/build?authToken=$authToken&branch="$TRAVIS_BRANCH"&commit="$TRAVIS_COMMIT"
