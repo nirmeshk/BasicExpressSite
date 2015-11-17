@@ -37,3 +37,10 @@ node app.js
 ```
 
 Open `http://localhost:3000` to access basic Express Site.
+
+To deploy using a docker container:
+
+```
+sudo docker build -t ncsu/deployserver .
+sudo docker run -d -p 3000:3000 ncsu/deployserver
+```
