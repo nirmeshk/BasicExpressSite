@@ -4,12 +4,18 @@
 var express = require('express')
   , stylus = require('stylus')
   , nib = require('nib')
-  , redis = require('redis');
+  , redis = require('redis')
+  , fs = require('fs'),
+  ini = require('ini');
 
 
 var app = express()
-var redisConf = require('./redisConf.js');
-var redisClient = redis.createClient(6379, '107.170.29.129', redisConf);
+
+var config = ini.parse(fs.readFileSync('/src/config.ini', 'utf-8'));
+var redisClient = redis.createClient(config.redis.redis_port, config.redis.redis_host, {
+  auth_pass: config.redis.redis_pass
+});
+
 var featureFlagsKey = 'featureFlags';
 var newTitleFeatureFlag = 'newTitle';
 
