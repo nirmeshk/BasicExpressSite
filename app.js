@@ -4,9 +4,7 @@
 var express = require('express')
   , stylus = require('stylus')
   , nib = require('nib')
-  , redis = require('redis')
-  , httpProxy = require('http-proxy')
-  , http = require('http');
+  , redis = require('redis');
 
 
 var app = express()
@@ -48,30 +46,7 @@ app.get('/', function (req, res) {
   });
 });
 
-app.post('/canaryBroke', function(req, res) {
-  canaryHealthy = false;
-});
-
-app.post('canaryFixed', function(req, res) {
-  canaryHealthy = true;
-});
-
 app.listen(3000);
-
-var serverTarget = 'http://127.0.0.1:3000';
-var canaryTarget = 'http://127.0.0.1:3005';
-var canaryHealthy = true;
-var proxy = httpProxy.createProxyServer({});
-var proxyServer = http.createServer(function(req, res)
-{
-  if(Math.random() > .9 && canaryHealthy) {
-    TARGET = canaryTarget;
-  } else {
-    TARGET = serverTarget;
-  }
-  proxy.web( req, res, {target: TARGET } );
-});
-proxyServer.listen(8081);
 
 app.get('/requests', function (req, res) {
         res.write("" + app.requests);
@@ -82,5 +57,4 @@ app.get('/startTime', function (req, res) {
         res.write("" + app.startTime);
         res.end();
 })
-app.listen(3000)
 console.log("App is running on 3000");
