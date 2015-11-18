@@ -8,7 +8,7 @@ var app = express();
 
 //var kue = require('kue')
 
-queue = kue.createQueue();
+//queue = kue.createQueue();
 
 var containerName = 'ncsu/canary_server';
 
@@ -69,9 +69,11 @@ var server = app.listen(8080, function() {
   console.log('Deployment server listening at http://%s:%s', host, port);
 });
 
+/*
 queue.process('deployment_queue', function(job, done){
   deploy_2(job.data.commit_id, done);
 });
+*/
 
 var deploy_2 = function(commit_id) {
     console.log(commit_id)
