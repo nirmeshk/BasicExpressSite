@@ -16,6 +16,8 @@ def deploy(commit):
     print(output)
     print(err)
 
+    
+
     p = subprocess.Popen("docker rm ncsu/canary_server" , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
