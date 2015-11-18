@@ -7,13 +7,11 @@ var app = express();
 
 config = ini.parse(fs.readFileSync('./config.ini', 'utf-8'));
 
-var redisPass = config.auth.redis_pass;
-
-var redisClient = redis.createClient(6379, '107.170.29.129', {
-  auth_pass: redisPass
+var redisClient = redis.createClient(config.redis.redis_port, config.redis.redis_host, {
+  auth_pass: config.redis.redis_pass
 });
 
-var authToken = config.auth.travis_auth_token
+var authToken = config.travis.travis_auth_token
 
 app.get('/build', function(req, res) {
   // verify the auth token
@@ -21,7 +19,7 @@ app.get('/build', function(req, res) {
   if (authToken === req.query.authToken && req.query.branch === "master") {
     // Push the commit to a redis queue.
     // There will be a cron job running that will deploy these commits one after the another
-    redisClient.rpush('deploy_queue', req.query.commit);
+    redisClient.publish("deploy_queue", req.query.commit);
     console.log(req.query.branch);
     console.log(req.query.commit);
     res.send('Task added to deploy queue !!!');
