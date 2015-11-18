@@ -2,7 +2,20 @@ var sio = require('socket.io')
   , http = require('http')
   , request = require('request')
   , os = require('os')
+  , ini = require('ini')
+  , fs = require('fs')
+  , nodemailer = require('nodemailer')
   ;
+/*
+config = ini.parse(fs.readFileSync('./config.ini','UTF-8'))
+var sendgrid = require('sendgrid')(config.auth.sendgrid_api_key)
+var email = new sendgrid.Email();
+
+email.addTo("xjprimus@ncsu.edu");
+email.setFrom("yelling@you.com");
+email.setSubject("Latency Issue");
+email.setHtml("Latency too dang high");
+*/
 
 var app = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -10,146 +23,95 @@ var app = http.createServer(function (req, res) {
     })
   , io = sio.listen(app);
 
+app.startTime = getAppStartTime();
+
 function memoryLoad()
 {
     // console.log( os.totalmem(), os.freemem() );
     return 0;
 }
 
-// Create function to get CPU information
-function cpuTicksAcrossCores() 
-{
-  //Initialise sum of idle and time of cores and fetch CPU info
-  var totalIdle = 0, totalTick = 0;
-  var cpus = os.cpus();
- 
-  //Loop through CPU cores
-  for(var i = 0, len = cpus.length; i < len; i++) 
-  {
-        //Select CPU core
-        var cpu = cpus[i];
-        //Total up the time in the cores tick
-        for(type in cpu.times) 
-        {
-            totalTick += cpu.times[type];
-        }     
-        //Total up the idle time of the core
-        totalIdle += cpu.times.idle;
-  }
- 
-  //Return the average Idle and Tick times
-  return {idle: totalIdle / cpus.length,  total: totalTick / cpus.length};
-}
 
-var startMeasure = cpuTicksAcrossCores();
-
-function cpuAverage()
-{
-    var endMeasure = cpuTicksAcrossCores(); 
- 
-    //Calculate the difference in idle and total time between the measures
-    var idleDifference = endMeasure.idle - startMeasure.idle;
-    var totalDifference = endMeasure.total - startMeasure.total;
- 
-    //Calculate the average percentage CPU usage
-    return 0;
-}
-
-function measureLatenancy(server)
-{
+function measureLatency()
+{   
+    var latency = 0;
     var startTime = Date.now();
     var options = 
     {
-        url: 'http://localhost' + ":" + server.address().port,
+       // url: 'http://localhost' + ":" + server.address().port,
+       url: 'http://192.168.33.10'+ ":" + 3000,
     };
     request(options, function (error, res, body) 
     {
-        server.latency = Date.now() - startTime;
+	if(error){
+	    console.log("error in request to home site");
+	}
+        latency = Date.now() - startTime;
+        app.latency = latency;
     });
-
-    return server.latency;
+    console.log("latency: " + app.latency);
+    return app.latency;
 }
-
-function calcuateColor()
+//get average requests per minute
+function requestsPerMinute()
 {
-    // latency scores of all nodes, mapped to colors.
-    var nodes = nodeServers.map( measureLatenancy ).map( function(latency) 
+     var options =
     {
-        var color = "#cccccc";
-        if( !latency )
-            return {color: color};
-        if( latency > 8000 )
-        {
-            color = "#ff0000";
+       // url: 'http://localhost' + ":" + server.address().port,
+       url: 'http://192.168.33.10' + ":" + 3000 + "/requests",
+    };
+    request(options, function (error, res, body)
+    {
+        if(error){
+            console.log("error in request to home site");
         }
-        else if( latency > 4000 )
-        {
-            color = "#cc0000";
-        }
-        else if( latency > 2000 )
-        {
-            color = "#ffff00";
-        }
-        else if( latency > 1000 )
-        {
-            color = "#cccc00";
-        }
-        else if( latency > 100 )
-        {
-            color = "#0000cc";
-        }
-        else
-        {
-            color = "#00ff00";
-        }
-        //console.log( latency );
-        return {color: color};
+	else{
+	    app.requests = parseInt(body);
+	}
     });
-    //console.log( nodes );
-    return nodes;
+    console.log("requests: " + app.requests);
+    //get the elapsed time since server creation in minutes
+    var elapsedTime = (Date.now() - app.startTime)/60000;
+    console.log("time: " + elapsedTime);
+    console.log("rpm : " + app.requests/elapsedTime);
+    return app.requests/elapsedTime;
 }
 
-
-/// CHILDREN nodes
-var nodeServers = [];
-
+function getAppStartTime(){
+var options =
+    {
+       // url: 'http://localhost' + ":" + server.address().port,
+       url: 'http://192.168.33.10' + ":" + 3000 + "/startTime",
+    };
+    request(options, function (error, res, body)
+    {
+        if(error){
+            console.log("error in request to home site");
+        }
+        else{
+            app.startTime = parseInt(body);
+        }
+    });
+}
 ///////////////
 //// Broadcast heartbeat over websockets
 //////////////
 setInterval( function () 
 {
+    console.log("Heartbeat: " + Date.now());
+    var latencyResult = measureLatency();
+    var rpmResult = requestsPerMinute();
+    if(latencyResult > 78){
+	sendEmail();
+    }
     io.sockets.emit('heartbeat', 
     { 
-        name: "Your Computer", cpu: cpuAverage(), memoryLoad: memoryLoad(),
-        nodes: calcuateColor()
+        name: "Your Computer", latency: latencyResult, requests: rpmResult,
    });
 
-}, 2000);
+}, 4000);
 
-app.listen(3000);
-
-/// NODE SERVERS
-
-createServer(9000, function()
-{
-    // FAST
-});
-createServer(9001, function()
-{
-    // MED
-    for( var i =0 ; i < 300; i++ )
-    {
-        i/2;
-    }
-});
-createServer(9002, function()
-{
-    // SLOW 
-    for( var i =0 ; i < 2000000000; i++ )
-    {
-        Math.sin(i) * Math.cos(i);
-    }   
-});
+app.listen(3001);
 
 function createServer(port, fn)
 {
@@ -161,7 +123,35 @@ function createServer(port, fn)
 
       res.end();
    }).listen(port);
-    nodeServers.push( server );
-
+    //global params that are set within low scope request functions
+    //set with <servername>.<attribute> = <value> i.e. app.latency = 10
     server.latency = undefined;
+    server.requests = undefined;
+}
+
+
+var mailOptions = {
+    from: 'Angry Server <yelling@you.com>', // sender address
+    to: 'xjprimus@ncsu.edu', // list of receivers
+    subject: 'Issue', // Subject line
+    text: 'You have and issue with your server, go check it.', // plaintext body
+    html: '<b>You have and issue with your server, go check it.</b>' // html body
+};
+
+var transporter = nodemailer.createTransport();
+
+function sendEmail(){
+  // send mail with defined transport object
+	/*
+  sendgrid.send(email, function(err, json) {
+    if (err) { return console.error("Error :" + err); }
+      console.log(json);
+  });
+*/
+transporter.sendMail({
+    from: 'xavierprimus@gmail.com',
+    to: 'xjprimus@ncsu.edu',
+    subject: 'TEST, I REPEAT, TEST',
+    text: 'hello world!'
+});  
 }

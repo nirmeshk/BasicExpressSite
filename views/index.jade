@@ -1,6 +1,8 @@
 extend layout
 
 block content
+  script
+    include socket.js
   p
     | Vivamus hendrerit arcu sed erat molestie
     | vehicula. Sed auctor neque eu tellus
@@ -16,12 +18,9 @@ block content
 
 block sidebar
   .widget
-    h1 Widget
-    p
-      | Sed auctor neque eu tellus rhoncus ut
-      | eleifend nibh porttitor. Ut in nulla enim.
-    
-    p
-      | Vivamus hendrerit arcu sed erat molestie
-      | vehicula.
-
+    h1 Current Latency(ms)
+    #div1.content
+      #latency
+    h1 Requests Per Min
+    #div2.content
+       #requests

@@ -15,6 +15,8 @@ var redisClient = redis.createClient(6379, '107.170.29.129', redisConf);
 var featureFlagsKey = 'featureFlags';
 var newTitleFeatureFlag = 'newTitle';
 
+app.requests = 0;
+app.startTime = Date.now();
 function compile(str, path) {
   return stylus(str)
     .set('filename', path)
@@ -32,6 +34,7 @@ app.use(stylus.middleware(
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
+  app.requests += 1;
   redisClient.sismember(featureFlagsKey, newTitleFeatureFlag, function(err, result) {
       if(err) {
         console.log("Error in redis connection: " + err);
@@ -70,3 +73,14 @@ var proxyServer = http.createServer(function(req, res)
 });
 proxyServer.listen(8081);
 
+app.get('/requests', function (req, res) {
+        res.write("" + app.requests);
+        res.end();
+})
+
+app.get('/startTime', function (req, res) {
+        res.write("" + app.startTime);
+        res.end();
+})
+app.listen(3000)
+console.log("App is running on 3000");
