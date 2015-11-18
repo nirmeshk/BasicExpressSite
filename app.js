@@ -10,7 +10,7 @@ var express = require('express')
 
 
 var app = express()
-var config = ini.parse(fs.readFileSync('./config.ini', 'utf-8'));
+var config = ini.parse(fs.readFileSync('/src/config.ini', 'utf-8'));
 var redisClient = redis.createClient(config.redis.redis_port, config.redis.redis_host, {
   auth_pass: config.redis.redis_pass
 });
