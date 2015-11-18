@@ -102,7 +102,7 @@ setInterval( function ()
     var latencyResult = measureLatency();
     var rpmResult = requestsPerMinute();
     if(latencyResult > 78){
-	sendEmail();
+	sendEmail(latencyResult);
     }
     io.sockets.emit('heartbeat', 
     { 
@@ -140,7 +140,7 @@ var mailOptions = {
 
 var transporter = nodemailer.createTransport();
 
-function sendEmail(){
+function sendEmail(latency){
   // send mail with defined transport object
 	/*
   sendgrid.send(email, function(err, json) {
@@ -151,7 +151,7 @@ function sendEmail(){
 transporter.sendMail({
     from: 'xavierprimus@gmail.com',
     to: 'xjprimus@ncsu.edu',
-    subject: 'TEST, I REPEAT, TEST',
-    text: 'hello world!'
+    subject: 'HIGH LATENCY',
+    text: 'Latency over 78ms, currently: ' + latency
 });  
 }
