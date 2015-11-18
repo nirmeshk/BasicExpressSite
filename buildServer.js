@@ -77,11 +77,16 @@ queue.process('deployment_queue', function(job, done){
 
 var deploy_2 = function(commit_id) {
     console.log(commit_id)
-    child_process.execSync("docker stop ncsu/canary_server");
-    child_process.execSync("docker rm ncsu/canary_server");
-    child_process.execSync("git pull --rebase origin master");
-    child_process.execSync("git reset --hard " + commit_id);
-    child_process.execSync("docker build -t ncsu/canary_server .");
-    child_process.execSync("docker run -p 3005:3000 -d ncsu/canary_server");
+    try{
+      child_process.execSync("docker stop ncsu/canary_server", {stdio:[0,1,2]});
+      child_process.execSync("docker rm ncsu/canary_server", {stdio:[0,1,2]});
+    }catch(ex){
+      console.log(ex)
+    }
+
+    child_process.execSync("git pull --rebase origin master", {stdio:[0,1,2]});
+    child_process.execSync("git reset --hard " + commit_id, {stdio:[0,1,2]});
+    child_process.execSync("docker build -t ncsu/canary_server .", {stdio:[0,1,2]});
+    child_process.execSync("docker run -p 3005:3000 -d ncsu/canary_server", {stdio:[0,1,2]});
     //done()
 }
