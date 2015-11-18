@@ -11,34 +11,34 @@ import subprocess
 
 def deploy(commit):
     # Run container with new release
-    p = subprocess.Popen(["docker", "stop", "ncsu/canary_server"] , stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen("docker stop ncsu/canary_server" , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
     print(err)
 
-    p = subprocess.Popen(["docker", "rm", "ncsu/canary_server"] , stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen("docker rm ncsu/canary_server" , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
     print(err)
 
     # fetch new stable code
-    p = subprocess.Popen(["git", "pull", "--rebase", "origin", "master"] , stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen("git pull --rebase origin master" , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
     print(err)
 
-    p = subprocess.Popen(["git", "reset", "--hard", commit] , stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen("git reset --hard " + commit , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
     print(err)
 
     # Build the image with new code
-    p = subprocess.Popen(["docker", "build", "-t", "ncsu/canary_server", "."] , stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen("docker build -t ncsu/canary_server ." , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
     print(err)
 
-    p = subprocess.Popen(["docker", "run", "-p", "3005:3000", "-d", "ncsu/canary_server"] , stdout=subprocess.PIPE, shell=True)
+    p = subprocess.Popen("docker run -p 3005:3000 -d ncsu/canary_server" , stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     print(output)
     print(err)
