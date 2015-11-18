@@ -55,6 +55,12 @@ node app.js
 - For each request, it stops the old docker container, pulls the changes for that commit_id, and builds a new container with new code and runs the new container.
 
 ##### The ability to use feature flags, serviced by a global redis store, to toggle functionality of a deployed feature in production.
+- We use a redis server running on a digital ocean droplet with required authentication enabled. 
+- We implement feature flags by having a set in redis containing all the enabled feature flags.
+- We made a feature flag for changing the webpage's title. 
+- Whenever a request comes in, we check if the feature flag for a new title is in the feature flags set, and if it is we return a page with the new title. If it's not in the feature flags set, or the check to redis fails, we return the page with the default title.
+
+![Feature Flags screencast](https://i.imgur.com/VfT7QYG.gif)
 
 ##### The ability to monitor the deployed application (using at least 2 metrics) and send alerts using email or SMS (e.g., smtp, mandrill, twilio). An alert can be sent based on some predefined rule.
 

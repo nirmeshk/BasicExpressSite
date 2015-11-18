@@ -8,7 +8,7 @@ var express = require('express')
 
 
 var app = express()
-var redisConf = require('./redisConf.js').redisConf;
+var redisConf = require('./redisConf.js');
 var redisClient = redis.createClient(6379, '107.170.29.129', redisConf);
 var featureFlagsKey = 'featureFlags';
 var newTitleFeatureFlag = 'newTitle';
