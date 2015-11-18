@@ -31,7 +31,7 @@ function memoryLoad()
     return 0;
 }
 
-var port = 3000;
+var port = 3005;
 var isCanary = false;
 if(process.argv.length > 2) {
     port = parseInt(process.argv[2]);
@@ -48,7 +48,7 @@ function measureLatency()
     var options = 
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://192.168.33.10'+ ":" + port,
+       url: 'http://localhost'+ ":" + port,
     };
     request(options, function (error, res, body) 
     {
@@ -67,7 +67,7 @@ function requestsPerMinute()
      var options =
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://192.168.33.10' + ":" + port + "/requests",
+       url: 'http://localhost' + ":" + port + "/requests",
     };
     request(options, function (error, res, body)
     {
@@ -90,7 +90,7 @@ function getAppStartTime(){
 var options =
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://192.168.33.10' + ":" + port + "/startTime",
+       url: 'http://localhost' + ":" + port + "/startTime",
     };
     request(options, function (error, res, body)
     {
@@ -112,7 +112,7 @@ setInterval( function ()
     var rpmResult = requestsPerMinute();
     if(latencyResult > 78){
         if(isCanary) {
-            request.post('http://127.0.0.1:8082/canaryBroke');
+            request.post('http://localhost:8082/canaryBroke');
         }
         sendEmail(latencyResult);
     }
