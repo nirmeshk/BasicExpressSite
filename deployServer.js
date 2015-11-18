@@ -76,8 +76,12 @@ queue.process('deployment_queue', function(job, done){
 */
 
 var deploy_2 = function(commit_id) {
-    console.log(commit_id)
+    console.log("\n\n###############################################")
+    console.log("Starting a new deployment for commit id: " + commit_id)
+
+
     try{
+      console.log("\n\nDestroying the old container....\n\n")
       child_process.execSync("docker stop ncsu/canary_server", {stdio:[0,1,2]});
       child_process.execSync("docker rm ncsu/canary_server", {stdio:[0,1,2]});
     }catch(ex){
