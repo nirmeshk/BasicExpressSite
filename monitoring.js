@@ -31,7 +31,8 @@ function memoryLoad()
     return 0;
 }
 
-var port = 3005;
+var port = 3000;
+var testPort = 3005;
 var isCanary = false;
 if(process.argv.length > 2) {
     port = parseInt(process.argv[2]);
@@ -48,12 +49,12 @@ function measureLatency()
     var options = 
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://localhost'+ ":" + port,
+       url: 'http://127.0.0.1'+ ':' + port,
     };
     request(options, function (error, res, body) 
     {
 	if(error){
-	    console.log("error in request to home site");
+	    console.log("error in request to home site - Latency");
 	}
         latency = Date.now() - startTime;
         app.latency = latency;
@@ -67,12 +68,12 @@ function requestsPerMinute()
      var options =
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://localhost' + ":" + port + "/requests",
+       url: 'http://127.0.0.1' + ':' + port + '/requests',
     };
     request(options, function (error, res, body)
     {
         if(error){
-            console.log("error in request to home site");
+            console.log("error in request to home site - Requests");
         }
 	else{
 	    app.requests = parseInt(body);
@@ -90,12 +91,12 @@ function getAppStartTime(){
 var options =
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://localhost' + ":" + port + "/startTime",
+       url: 'http://127.0.0.1:' + port + '/startTime',
     };
     request(options, function (error, res, body)
     {
         if(error){
-            console.log("error in request to home site");
+            console.log("error in request to home site- App start time");
         }
         else{
             app.startTime = parseInt(body);
@@ -112,7 +113,7 @@ setInterval( function ()
     var rpmResult = requestsPerMinute();
     if(latencyResult > 78){
         if(isCanary) {
-            request.post('http://localhost:8082/canaryBroke');
+            request.post('http://127.0.0.1:8082/canaryBroke');
         }
         sendEmail(latencyResult);
     }
