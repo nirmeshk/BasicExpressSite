@@ -54,6 +54,7 @@ node app.js
 - The `deployServer.js` is a simple http server, that listens to the deployment requests.
 - For each request, it stops the old docker container, pulls the changes for that commit_id, and builds a new container with new code and runs the new container.
 - ![screen cast](images/part_1.gif)
+- **Note** here is the link to video for this GIF file (https://vimeo.com/146186801)
 
 ##### The ability to use feature flags, serviced by a global redis store, to toggle functionality of a deployed feature in production.
 - We use a redis server running on a digital ocean droplet with required authentication enabled. 
