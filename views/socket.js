@@ -1,6 +1,6 @@
 $(document).ready( function()
 {
-    var socket = io.connect('http://127.0.0.1:3001');
+    var socket = io.connect('http://45.55.6.77:3001');
 
     socket.on("heartbeat", function(client) 
     {

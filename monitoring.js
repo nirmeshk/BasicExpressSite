@@ -23,7 +23,6 @@ var app = http.createServer(function (req, res) {
     })
   , io = sio.listen(app);
 
-app.startTime = getAppStartTime();
 
 function memoryLoad()
 {
@@ -31,16 +30,17 @@ function memoryLoad()
     return 0;
 }
 
-var port = 3000;
-var testPort = 3005;
-var isCanary = false;
+app.port = 3000;
+app.isCanary = false;
 if(process.argv.length > 2) {
-    port = parseInt(process.argv[2]);
+    app.port = parseInt(process.argv[2]);
     if(process.argv.length > 3) {
-        isCanary = true;
+        app.isCanary = true;
     }
+   console.log(app.port);
 }
 
+app.startTime = getAppStartTime();
 
 function measureLatency()
 {   
@@ -49,7 +49,7 @@ function measureLatency()
     var options = 
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://127.0.0.1'+ ':' + port,
+       url: 'http://127.0.0.1'+ ':' + app.port,
     };
     request(options, function (error, res, body) 
     {
@@ -68,7 +68,7 @@ function requestsPerMinute()
      var options =
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://127.0.0.1' + ':' + port + '/requests',
+       url: 'http://127.0.0.1' + ':' + app.port + '/requests',
     };
     request(options, function (error, res, body)
     {
@@ -91,8 +91,9 @@ function getAppStartTime(){
 var options =
     {
        // url: 'http://localhost' + ":" + server.address().port,
-       url: 'http://127.0.0.1:' + port + '/startTime',
+       url: 'http://127.0.0.1:' + app.port + '/startTime',
     };
+    console.log(options.url);
     request(options, function (error, res, body)
     {
         if(error){
@@ -112,7 +113,7 @@ setInterval( function ()
     var latencyResult = measureLatency();
     var rpmResult = requestsPerMinute();
     if(latencyResult > 78){
-        if(isCanary) {
+        if(app.isCanary) {
             request.post('http://127.0.0.1:8082/canaryBroke');
         }
         sendEmail(latencyResult);
