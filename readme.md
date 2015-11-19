@@ -64,6 +64,13 @@ node app.js
 
 ##### The ability to monitor the deployed application (using at least 2 metrics) and send alerts using email or SMS (e.g., smtp, mandrill, twilio). An alert can be sent based on some predefined rule.
 
+- When we want to begin moninoring for our web application, we run <code>node monitoring.js <port> <proxy></code>
+  where we can set the port to check for a running web appication and indicate where there is a canary release to check by passing a value to the proxy parameter.
+
+- The web application that we want to monitor will maintain it's original start time and the number of requests that it receives.
+- Our monitoring application sends a request the the application for this
+![Monitoring screencast](http://i.imgur.com/FSX8QL1.gif)
+
 ##### The ability to perform a canary release: Using a proxy/load balancer server, route a percentage of traffic to a newly staged version of software and remaining traffic to a stable version of software. Stop routing traffic to canary if alert is raised.
 
 
