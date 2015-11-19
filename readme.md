@@ -72,6 +72,8 @@ node app.js
 ![Monitoring screencast](http://i.imgur.com/FSX8QL1.gif)
 
 ##### The ability to perform a canary release: Using a proxy/load balancer server, route a percentage of traffic to a newly staged version of software and remaining traffic to a stable version of software. Stop routing traffic to canary if alert is raised.
-
+- In our application, we have designated port 3000 as where the stable server lives, and 3005 is where a canary releases will be. The only difference between deploying to the stable port and the canary port is the port forwarding option in the docker run commands. Deploying to stable is `docker run -d -p 3000:3000 ncsu/deploy_server` and deploying to canary is `docker run -d -p 3005:3000 ncsu/canary_server`. 
+- We run our proxy on port 8081. Every time a request comes in, we output if the canary is still healthy and where we forward the request to, and then forward the request. Assuming the canary is healthy, we forward 10% of requests to the canary server. On port 8082, we run a small express application that has endpoints for setting the health for the canary. 
+![Canary Release screencast](https://i.imgur.com/mAXTcTM.gif)
 
 
