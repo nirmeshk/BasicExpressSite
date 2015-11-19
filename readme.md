@@ -68,7 +68,11 @@ node app.js
   where we can set the port to check for a running web appication and indicate where there is a canary release to check by passing a value to the proxy parameter.
 
 - The web application that we want to monitor will maintain it's original start time and the number of requests that it receives.
-- Our monitoring application sends a request the the application for this
+- Our monitoring application emits message every four seconds on a socket.io connection established on port 3000. The the main web application consumes the message to display the metrics that we gather. We test two metrics:
+  + Latency of sending a request and getting the response. Displayed in milliseconds.
+  + The number of requests per minute over the time since the main web application started.
+- Using the nodemailer module, an email is sent to our destined mailbox over generic smtp. Since no specific authorized mail client is specified, the message may show up in spam as shown in the demo below 
+
 ![Monitoring screencast](http://i.imgur.com/FSX8QL1.gif)
 
 ##### The ability to perform a canary release: Using a proxy/load balancer server, route a percentage of traffic to a newly staged version of software and remaining traffic to a stable version of software. Stop routing traffic to canary if alert is raised.
