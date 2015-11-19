@@ -53,6 +53,7 @@ node app.js
 - Once the build and test is successfull, travis makes a http request to our deployment server along with the build id. We have used `after_success` hook in `.travis.yml` to make this call.
 - The `deployServer.js` is a simple http server, that listens to the deployment requests.
 - For each request, it stops the old docker container, pulls the changes for that commit_id, and builds a new container with new code and runs the new container.
+- ![screen cast](images/part_1.gif)
 
 ##### The ability to use feature flags, serviced by a global redis store, to toggle functionality of a deployed feature in production.
 - We use a redis server running on a digital ocean droplet with required authentication enabled. 
@@ -68,11 +69,7 @@ node app.js
   where we can set the port to check for a running web appication and indicate where there is a canary release to check by passing a value to the proxy parameter.
 
 - The web application that we want to monitor will maintain it's original start time and the number of requests that it receives.
-- Our monitoring application emits message every four seconds on a socket.io connection established on port 3000. The the main web application consumes the message to display the metrics that we gather. We test two metrics:
-  + Latency of sending a request and getting the response. Displayed in milliseconds.
-  + The number of requests per minute over the time since the main web application started.
-- Using the nodemailer module, an email is sent to our destined mailbox over generic smtp. Since no specific authorized mail client is specified, the message may show up in spam as shown in the demo below 
-
+- Our monitoring application sends a request the the application for this
 ![Monitoring screencast](http://i.imgur.com/FSX8QL1.gif)
 
 ##### The ability to perform a canary release: Using a proxy/load balancer server, route a percentage of traffic to a newly staged version of software and remaining traffic to a stable version of software. Stop routing traffic to canary if alert is raised.
