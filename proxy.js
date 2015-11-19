@@ -28,6 +28,7 @@ var proxyServer = http.createServer(function(req, res)
   } else {
     TARGET = serverTarget;
   }
+  console.log('Sending request to: ' + TARGET);
   proxy.web( req, res, {target: TARGET } );
 });
 proxyServer.listen(8081);
